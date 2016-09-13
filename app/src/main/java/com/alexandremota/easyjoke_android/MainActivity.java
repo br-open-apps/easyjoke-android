@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 .withHasStableIds(true)
                 .withItemAnimator(new AlphaCrossFadeAnimator())
                 .addDrawerItems(
-                        new SectionDrawerItem().withName("Categorias")
+                        new SectionDrawerItem().withName(R.string.category_section)
                 )
                 .withOnDrawerItemClickListener(onDrawerItemClickListener)
                 .withSavedInstance(savedInstanceState)
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                                 .withName(category.getName())
                                 .withIdentifier(category.getId())
                                 .withTag(category)
-                                .withSelectable(false)
+                                .withSelectable(true)
                         );
                     }
                 }

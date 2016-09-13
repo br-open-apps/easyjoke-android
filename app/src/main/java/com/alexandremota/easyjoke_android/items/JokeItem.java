@@ -63,6 +63,4 @@ public class JokeItem extends AbstractItem<JokeItem, JokeItem.ViewHolder> {
             this.view = view;
         }
     }
-
-
 }
