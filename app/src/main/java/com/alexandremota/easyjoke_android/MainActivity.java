@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
     }

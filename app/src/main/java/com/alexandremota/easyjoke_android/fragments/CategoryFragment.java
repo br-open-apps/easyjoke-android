@@ -71,33 +71,14 @@ public class CategoryFragment extends Fragment {
 
         if (getArguments() != null) {
             mCategoryId = getArguments().getLong(ARG_CATEGORY_ID);
-            Log.i(LOG_TAG, "Fragment Category Id: " + mCategoryId);
-
-            //create our FastAdapter which will manage everything
-            mFastItemAdapter = new FastItemAdapter<>();
-            //create our FooterAdapter which will manage the progress items
-            mFooterAdapter = new FooterAdapter<>();
-
-            api = new ApiService().getApi();
-            api.getJokesFromCategory(mCategoryId, null).enqueue(new Callback<ListResponse<Joke>>() {
-                @Override
-                public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
-                    if (response.isSuccessful()) {
-                        mListResponse = response.body();
-                        for (Joke joke : mListResponse.getData()) {
-                            mJokeItems.add(JokeItem.newInstance(joke));
-                        }
-                        mFastItemAdapter.add(mJokeItems);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
-                    Log.e(LOG_TAG, "Error to list all jokes from category", t);
-                }
-            });
         }
 
+        api = new ApiService().getApi();
+
+        //create our FastAdapter which will manage everything
+        mFastItemAdapter = new FastItemAdapter<>();
+        //create our FooterAdapter which will manage the progress items
+        mFooterAdapter = new FooterAdapter<>();
         //restore selections (this has to be done after the items were added
         mFastItemAdapter.withSavedInstanceState(savedInstanceState);
     }
@@ -120,9 +101,30 @@ public class CategoryFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(mFastItemAdapter);
         mRecyclerView.setAdapter(mFooterAdapter.wrap(mFastItemAdapter));
         mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
+
+        if (mCategoryId != null) {
+            api.getJokesFromCategory(mCategoryId, null).enqueue(new Callback<ListResponse<Joke>>() {
+                @Override
+                public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
+                    mFooterAdapter.clear();
+                    if (response.isSuccessful()) {
+                        mListResponse = response.body();
+                        for (Joke joke : mListResponse.getData()) {
+                            mJokeItems.add(JokeItem.newInstance(joke));
+                        }
+                        mFastItemAdapter.add(mJokeItems);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
+                    Log.e(LOG_TAG, "Error to list all jokes from category", t);
+                }
+            });
+        }
+
     }
 
     private EndlessRecyclerOnScrollListener endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mFooterAdapter) {
@@ -130,26 +132,28 @@ public class CategoryFragment extends Fragment {
         public void onLoadMore(final int currentPage) {
             mFooterAdapter.clear();
             mFooterAdapter.add(new ProgressItem().withEnabled(false));
-            if (mListResponse.getMeta().getPagination().hasNextPage()) {
-                api.getJokesFromCategory(mCategoryId, mListResponse.getMeta().getPagination().getNextPage()).enqueue(new Callback<ListResponse<Joke>>() {
-                    @Override
-                    public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
-                        if (response.isSuccessful()) {
-                            mFooterAdapter.clear();
-                            mListResponse = response.body();
-                            for (Joke joke : mListResponse.getData()) {
-                                mFastItemAdapter.add(mFastItemAdapter.getAdapterItemCount(), JokeItem.newInstance(joke));
+            if (mListResponse != null) {
+                if (mListResponse.getMeta().getPagination().hasNextPage()) {
+                    api.getJokesFromCategory(mCategoryId, mListResponse.getMeta().getPagination().getNextPage()).enqueue(new Callback<ListResponse<Joke>>() {
+                        @Override
+                        public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
+                            if (response.isSuccessful()) {
+                                mListResponse = response.body();
+                                for (Joke joke : mListResponse.getData()) {
+                                    mFastItemAdapter.add(mFastItemAdapter.getAdapterItemCount(), JokeItem.newInstance(joke));
+                                }
                             }
+                            mFooterAdapter.clear();
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
-                        mFooterAdapter.clear();
-                    }
-                });
-            } else {
-                mFooterAdapter.clear();
+                        @Override
+                        public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
+                            mFooterAdapter.clear();
+                        }
+                    });
+                } else {
+                    mFooterAdapter.clear();
+                }
             }
         }
     };
