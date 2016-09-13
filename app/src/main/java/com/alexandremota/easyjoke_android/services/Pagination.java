@@ -128,6 +128,7 @@ public class Pagination {
     public boolean hasPreviousPage() {
         return currentPage < totalPages;
     }
+
     /**
      * Get next page number
      *
