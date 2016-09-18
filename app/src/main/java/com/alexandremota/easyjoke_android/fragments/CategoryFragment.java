@@ -1,5 +1,6 @@
 package com.alexandremota.easyjoke_android.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alexandremota.easyjoke_android.JokeActivity;
 import com.alexandremota.easyjoke_android.R;
 import com.alexandremota.easyjoke_android.items.JokeItem;
 import com.alexandremota.easyjoke_android.models.Joke;
@@ -24,6 +26,7 @@ import com.mikepenz.fastadapter.adapters.FooterAdapter;
 import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 import com.mikepenz.fastadapter_extensions.scroll.EndlessRecyclerOnScrollListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +98,11 @@ public class CategoryFragment extends Fragment {
             public boolean onClick(View v, IAdapter<JokeItem> adapter, JokeItem item, int position) {
                 // TODO:: Open JokeActivity
                 Log.i(LOG_TAG, item.getJoke().getTitle());
+                Intent intent = new Intent(getActivity(), JokeActivity.class);
+                intent.putExtra("title", item.getJoke().getTitle());
+                intent.putExtra("content", item.getJoke().getContent());
+
+                startActivity(intent);
                 return true;
             }
         });

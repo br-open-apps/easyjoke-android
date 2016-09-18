@@ -2,19 +2,27 @@ package com.alexandremota.easyjoke_android;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.widget.TextView;
+
+import com.alexandremota.easyjoke_android.items.JokeItem;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class JokeActivity extends AppCompatActivity {
 
-    public static final String JOKE_CONTENT = "joke_content";
+    public static final String JOKE_TITLE = "title";
+    public static final String JOKE_CONTENT = "content";
 
     @BindView(R.id.titleJoke)
-    private TextView titleJoke;
+    public TextView titleJoke;
 
     @BindView(R.id.contentJoke)
-    private TextView contentJoke;
+    public TextView contentJoke;
+
+
 
 
 
@@ -24,9 +32,15 @@ public class JokeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_joke);
         ButterKnife.bind(this);
 
-        titleJoke.setText("");
-        contentJoke.setText(getIntent().getExtras().getString(JOKE_CONTENT));
 
-        getSupportActionBar().setSubtitle("Teste Categoria");
+        getSupportActionBar();
+
+
+
+        titleJoke.setText(getIntent().getExtras().getString(JOKE_TITLE));
+
+       contentJoke.setText(getIntent().getExtras().getString(JOKE_CONTENT));
+
+//        getSupportActionBar().setSubtitle("Teste Categoria");
     }
 }
