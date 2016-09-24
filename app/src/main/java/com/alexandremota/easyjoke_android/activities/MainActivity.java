@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android;
+package com.alexandremota.easyjoke_android.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.alexandremota.easyjoke_android.R;
 import com.alexandremota.easyjoke_android.fragments.CategoryFragment;
 import com.alexandremota.easyjoke_android.models.Category;
 import com.alexandremota.easyjoke_android.services.Api;
@@ -38,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 Category category = (Category) drawerItem.getTag();
                 if (category != null) {
                     getSupportActionBar().setTitle(category.getName());
+                    openFragment(CategoryFragment.newInstance(category));
                 }
-                openFragment(CategoryFragment.newInstance(drawerItem.getIdentifier()));
             }
             return false;
         }

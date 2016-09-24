@@ -12,9 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.alexandremota.easyjoke_android.JokeActivity;
 import com.alexandremota.easyjoke_android.R;
+import com.alexandremota.easyjoke_android.activities.JokeActivity;
 import com.alexandremota.easyjoke_android.items.JokeItem;
+import com.alexandremota.easyjoke_android.models.Category;
 import com.alexandremota.easyjoke_android.models.Joke;
 import com.alexandremota.easyjoke_android.services.Api;
 import com.alexandremota.easyjoke_android.services.ApiService;
@@ -26,7 +27,6 @@ import com.mikepenz.fastadapter.adapters.FooterAdapter;
 import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 import com.mikepenz.fastadapter_extensions.scroll.EndlessRecyclerOnScrollListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,11 +35,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CategoryFragment extends Fragment {
+
     private static final String LOG_TAG = CategoryFragment.class.getSimpleName();
+    private static final String ARG_CATEGORY = "category";
 
-    private static final String ARG_CATEGORY_ID = "param1";
-
-    private Long mCategoryId;
+    private Category mCategory;
     private RecyclerView mRecyclerView;
     private FastItemAdapter<JokeItem> mFastItemAdapter;
     private FooterAdapter<ProgressItem> mFooterAdapter;
@@ -47,94 +47,6 @@ public class CategoryFragment extends Fragment {
     private Api api;
     private ListResponse<Joke> mListResponse;
     private List<JokeItem> mJokeItems = new ArrayList<>();
-
-    public CategoryFragment() {
-
-    }
-
-    public static CategoryFragment newInstance(long categoryId) {
-        CategoryFragment fragment = new CategoryFragment();
-        Bundle args = new Bundle();
-        args.putLong(ARG_CATEGORY_ID, categoryId);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_blank, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        return view;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mCategoryId = getArguments().getLong(ARG_CATEGORY_ID);
-        }
-
-        api = new ApiService().getApi();
-
-        //create our FastAdapter which will manage everything
-        mFastItemAdapter = new FastItemAdapter<>();
-        //create our FooterAdapter which will manage the progress items
-        mFooterAdapter = new FooterAdapter<>();
-        //restore selections (this has to be done after the items were added
-        mFastItemAdapter.withSavedInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        mFastItemAdapter.withSelectable(true);
-        mFastItemAdapter.withPositionBasedStateManagement(false);
-        mFastItemAdapter.withSelectable(true);
-        mFastItemAdapter.withOnClickListener(new FastAdapter.OnClickListener<JokeItem>() {
-            @Override
-            public boolean onClick(View v, IAdapter<JokeItem> adapter, JokeItem item, int position) {
-                // TODO:: Open JokeActivity
-                Log.i(LOG_TAG, item.getJoke().getTitle());
-                Intent intent = new Intent(getActivity(), JokeActivity.class);
-                intent.putExtra("title", item.getJoke().getTitle());
-                intent.putExtra("content", item.getJoke().getContent());
-
-                startActivity(intent);
-                return true;
-            }
-        });
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(mFooterAdapter.wrap(mFastItemAdapter));
-        mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
-
-        if (mCategoryId != null) {
-            api.getJokesFromCategory(mCategoryId, null).enqueue(new Callback<ListResponse<Joke>>() {
-                @Override
-                public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
-                    mFooterAdapter.clear();
-                    if (response.isSuccessful()) {
-                        mListResponse = response.body();
-                        for (Joke joke : mListResponse.getData()) {
-                            mJokeItems.add(JokeItem.newInstance(joke));
-                        }
-                        mFastItemAdapter.add(mJokeItems);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
-                    Log.e(LOG_TAG, "Error to list all jokes from category", t);
-                }
-            });
-        }
-
-    }
-
     private EndlessRecyclerOnScrollListener endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mFooterAdapter) {
         @Override
         public void onLoadMore(final int currentPage) {
@@ -142,7 +54,7 @@ public class CategoryFragment extends Fragment {
             mFooterAdapter.add(new ProgressItem().withEnabled(false));
             if (mListResponse != null) {
                 if (mListResponse.getMeta().getPagination().hasNextPage()) {
-                    api.getJokesFromCategory(mCategoryId, mListResponse.getMeta().getPagination().getNextPage()).enqueue(new Callback<ListResponse<Joke>>() {
+                    api.getJokesFromCategory(mCategory.getId(), mListResponse.getMeta().getPagination().getNextPage()).enqueue(new Callback<ListResponse<Joke>>() {
                         @Override
                         public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
                             if (response.isSuccessful()) {
@@ -165,4 +77,87 @@ public class CategoryFragment extends Fragment {
             }
         }
     };
+
+    public CategoryFragment() {
+    }
+
+    public static CategoryFragment newInstance(Category category) {
+        CategoryFragment fragment = new CategoryFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_CATEGORY, category);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_blank, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        return view;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            mCategory = getArguments().getParcelable(ARG_CATEGORY);
+        }
+
+        api = new ApiService().getApi();
+
+        //create our FastAdapter which will manage everything
+        mFastItemAdapter = new FastItemAdapter<>();
+        //create our FooterAdapter which will manage the progress items
+        mFooterAdapter = new FooterAdapter<>();
+        //restore selections (this has to be done after the items were added
+        mFastItemAdapter.withSavedInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mFastItemAdapter.withSelectable(true);
+        mFastItemAdapter.withPositionBasedStateManagement(false);
+        mFastItemAdapter.withSelectable(true);
+        mFastItemAdapter.withOnClickListener(new FastAdapter.OnClickListener<JokeItem>() {
+            @Override
+            public boolean onClick(View v, IAdapter<JokeItem> adapter, JokeItem item, int position) {
+                Intent intent = new Intent(getActivity(), JokeActivity.class);
+                intent.putExtra(JokeActivity.JOKE, item.getJoke());
+                intent.putExtra(JokeActivity.JOKE_CATEGORY, mCategory);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mFooterAdapter.wrap(mFastItemAdapter));
+        mRecyclerView.addOnScrollListener(endlessRecyclerOnScrollListener);
+
+        if (mCategory != null) {
+            api.getJokesFromCategory(mCategory.getId(), null).enqueue(new Callback<ListResponse<Joke>>() {
+                @Override
+                public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
+                    mFooterAdapter.clear();
+                    if (response.isSuccessful()) {
+                        mListResponse = response.body();
+                        for (Joke joke : mListResponse.getData()) {
+                            mJokeItems.add(JokeItem.newInstance(joke));
+                        }
+                        mFastItemAdapter.add(mJokeItems);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
+                    Log.e(LOG_TAG, "Error to list all jokes from category", t);
+                }
+            });
+        }
+
+    }
 }
