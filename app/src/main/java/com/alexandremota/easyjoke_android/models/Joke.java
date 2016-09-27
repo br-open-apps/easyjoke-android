@@ -19,6 +19,7 @@ public class Joke implements Parcelable {
             return new Joke[size];
         }
     };
+
     int id;
     String title;
     String content;

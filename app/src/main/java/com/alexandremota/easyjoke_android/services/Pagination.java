@@ -135,9 +135,7 @@ public class Pagination {
      * @return nextPage integer for the next page
      */
     public int getNextPage() {
-        if (this.hasNextPage()) {
-            return this.getCurrentPage() + 1;
-        }
+        if (this.hasNextPage()) return this.getCurrentPage() + 1;
         return 0;
     }
 

@@ -27,9 +27,6 @@ import com.mikepenz.fastadapter.adapters.FooterAdapter;
 import com.mikepenz.fastadapter_extensions.items.ProgressItem;
 import com.mikepenz.fastadapter_extensions.scroll.EndlessRecyclerOnScrollListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,33 +43,33 @@ public class CategoryFragment extends Fragment {
 
     private Api api;
     private ListResponse<Joke> mListResponse;
-    private List<JokeItem> mJokeItems = new ArrayList<>();
+
     private EndlessRecyclerOnScrollListener endlessRecyclerOnScrollListener = new EndlessRecyclerOnScrollListener(mFooterAdapter) {
         @Override
         public void onLoadMore(final int currentPage) {
             mFooterAdapter.clear();
-            mFooterAdapter.add(new ProgressItem().withEnabled(false));
             if (mListResponse != null) {
                 if (mListResponse.getMeta().getPagination().hasNextPage()) {
+                    mFooterAdapter.add(new ProgressItem().withEnabled(false));
                     api.getJokesFromCategory(mCategory.getId(), mListResponse.getMeta().getPagination().getNextPage()).enqueue(new Callback<ListResponse<Joke>>() {
                         @Override
                         public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
-                            if (response.isSuccessful()) {
+                            if (!response.isSuccessful()) {
+                                mFooterAdapter.clear();
+                            } else {
                                 mListResponse = response.body();
                                 for (Joke joke : mListResponse.getData()) {
                                     mFastItemAdapter.add(mFastItemAdapter.getAdapterItemCount(), JokeItem.newInstance(joke));
                                 }
                             }
-                            mFooterAdapter.clear();
                         }
 
                         @Override
                         public void onFailure(Call<ListResponse<Joke>> call, Throwable t) {
+                            Log.e(LOG_TAG, "Error to load all jokes from category: " + mCategory.getId(), t);
                             mFooterAdapter.clear();
                         }
                     });
-                } else {
-                    mFooterAdapter.clear();
                 }
             }
         }
@@ -142,13 +139,11 @@ public class CategoryFragment extends Fragment {
             api.getJokesFromCategory(mCategory.getId(), null).enqueue(new Callback<ListResponse<Joke>>() {
                 @Override
                 public void onResponse(Call<ListResponse<Joke>> call, Response<ListResponse<Joke>> response) {
-                    mFooterAdapter.clear();
                     if (response.isSuccessful()) {
                         mListResponse = response.body();
                         for (Joke joke : mListResponse.getData()) {
-                            mJokeItems.add(JokeItem.newInstance(joke));
+                            mFastItemAdapter.add(mFastItemAdapter.getAdapterItemCount(), JokeItem.newInstance(joke));
                         }
-                        mFastItemAdapter.add(mJokeItems);
                     }
                 }
 
