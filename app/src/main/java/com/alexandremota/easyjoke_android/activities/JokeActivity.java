@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -20,13 +21,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class JokeActivity extends AppCompatActivity {
+    private static final String LOG_TAG = JokeActivity.class.getSimpleName();
 
     public static final String JOKE = "joke";
     public static final String JOKE_CATEGORY = "category";
+
     @BindView(R.id.contentJoke)
     public TextView contentJoke;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
     Joke mJoke;
     Category mCategory;
 
@@ -66,6 +70,7 @@ public class JokeActivity extends AppCompatActivity {
         MenuItem menuItem = menu.findItem(R.id.action_share);
         menuItem.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_share)
                 .actionBar().color(Color.WHITE));
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -75,12 +80,16 @@ public class JokeActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_share:
-                startActivity(Intent.createChooser(getShareIntent(),
-                        getString(R.string.share)));
+                startActivity(getShareIntent());
             case android.R.id.home:
                 this.onBackPressed();
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private Intent getShareIntent() {
