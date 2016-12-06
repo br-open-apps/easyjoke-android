@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.alexandremota.easyjoke_android.R;
@@ -30,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     Toolbar mToolbar;
-    private Drawer result;
+    private Drawer mDrawer;
     private Api api;
+
     private Drawer.OnDrawerItemClickListener onDrawerItemClickListener = new Drawer.OnDrawerItemClickListener() {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
         // create drawer menu
-        result = new DrawerBuilder()
+        mDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(mToolbar)
                 .withHasStableIds(true)
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<ListResponse<Category>> call, Response<ListResponse<Category>> response) {
                 if (response.isSuccessful()) {
                     for (Category category : response.body().getData()) {
-                        result.addItem(new PrimaryDrawerItem()
+                        mDrawer.addItem(new PrimaryDrawerItem()
                                 .withName(category.getName())
                                 .withIdentifier(category.getId())
                                 .withTag(category)
@@ -88,12 +90,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ListResponse<Category>> call, Throwable t) {
-
+                Log.e(LOG_TAG, "Error while selecting categories",  t);
             }
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        mDrawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+        mDrawer.setSelection(1, true);
     }
 
     private void openFragment(Fragment fragment) {
@@ -106,15 +109,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         //add the values which need to be saved from the drawer to the bundle
-        outState = result.saveInstanceState(outState);
+        outState = mDrawer.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onBackPressed() {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
-        if (result != null && result.isDrawerOpen()) {
-            result.closeDrawer();
+        if (mDrawer != null && mDrawer.isDrawerOpen()) {
+            mDrawer.closeDrawer();
         } else {
             super.onBackPressed();
         }

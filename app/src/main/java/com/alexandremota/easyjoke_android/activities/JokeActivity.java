@@ -3,9 +3,11 @@ package com.alexandremota.easyjoke_android.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -16,10 +18,12 @@ import com.alexandremota.easyjoke_android.models.Joke;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class JokeActivity extends AppCompatActivity {
+public class JokeActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private static final String LOG_TAG = JokeActivity.class.getSimpleName();
 
     public static final String JOKE = "joke";
@@ -32,6 +36,7 @@ public class JokeActivity extends AppCompatActivity {
 
     Joke mJoke;
     Category mCategory;
+    TextToSpeech mTts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,15 @@ public class JokeActivity extends AppCompatActivity {
                 getSupportActionBar().setSubtitle(mCategory.getName());
             }
 
+            if (mTts == null) {
+                try {
+                    mTts = new TextToSpeech(this, this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "Text to Speech error", e);
+                }
+            }
+
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -66,8 +80,12 @@ public class JokeActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem menuItem = menu.findItem(R.id.action_share);
-        menuItem.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_share)
+        MenuItem menuItemShare = menu.findItem(R.id.action_share);
+        menuItemShare.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_share)
+                .actionBar().color(Color.WHITE));
+
+        MenuItem menuItemTextSpeech = menu.findItem(R.id.action_speech);
+        menuItemTextSpeech.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_speaker_notes)
                 .actionBar().color(Color.WHITE));
 
         return super.onPrepareOptionsMenu(menu);
@@ -80,14 +98,32 @@ public class JokeActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_share:
                 startActivity(getShareIntent());
+                break;
+            case R.id.action_speech:
+                if (mTts.isSpeaking()) {
+                    mTts.stop();
+                    item.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_speaker_notes)
+                            .actionBar().color(Color.WHITE));
+                } else {
+                    item.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_speaker_notes_off)
+                            .actionBar().color(Color.WHITE));
+                    mTts.speak(mJoke.getContent(), TextToSpeech.QUEUE_FLUSH, null);
+                }
+                break;
             case android.R.id.home:
                 this.onBackPressed();
+                break;
         }
         return true;
     }
 
     @Override
     public void onBackPressed() {
+        if(mTts != null) {
+            mTts.stop();
+            mTts.shutdown();
+            Log.d(LOG_TAG, "TTS Destroyed");
+        }
         super.onBackPressed();
     }
 
@@ -105,4 +141,16 @@ public class JokeActivity extends AppCompatActivity {
         return result.toString();
     }
 
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS && mTts != null) {
+            int result = mTts.setLanguage(new Locale("pt", "BR"));
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e(LOG_TAG, "This Language is not supported");
+            }
+        } else {
+            Log.e(LOG_TAG, "Initialization Failed!");
+        }
+    }
 }
