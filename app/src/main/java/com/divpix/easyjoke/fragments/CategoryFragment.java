@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.fragments;
+package com.divpix.easyjoke.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,14 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.alexandremota.easyjoke_android.R;
-import com.alexandremota.easyjoke_android.activities.JokeActivity;
-import com.alexandremota.easyjoke_android.items.JokeItem;
-import com.alexandremota.easyjoke_android.models.Category;
-import com.alexandremota.easyjoke_android.models.Joke;
-import com.alexandremota.easyjoke_android.services.Api;
-import com.alexandremota.easyjoke_android.services.ApiService;
-import com.alexandremota.easyjoke_android.services.ListResponse;
+import com.divpix.easyjoke.R;
+import com.divpix.easyjoke.activities.JokeActivity;
+import com.divpix.easyjoke.items.JokeItem;
+import com.divpix.easyjoke.models.Category;
+import com.divpix.easyjoke.models.Joke;
+import com.divpix.easyjoke.services.Api;
+import com.divpix.easyjoke.services.ApiService;
+import com.divpix.easyjoke.services.ListResponse;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;

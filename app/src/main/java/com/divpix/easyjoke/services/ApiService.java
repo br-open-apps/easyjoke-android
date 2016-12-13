@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.services;
+package com.divpix.easyjoke.services;
 
 public class ApiService {
     private Api api;

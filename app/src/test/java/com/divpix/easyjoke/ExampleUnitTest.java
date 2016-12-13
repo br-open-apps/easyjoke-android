@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android;
+package com.divpix.easyjoke;
 
 import org.junit.Test;
 

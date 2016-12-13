@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.services;
+package com.divpix.easyjoke.services;
 
 import java.util.List;
 

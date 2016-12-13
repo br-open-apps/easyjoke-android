@@ -1,10 +1,10 @@
-package com.alexandremota.easyjoke_android.activities;
+package com.divpix.easyjoke.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.alexandremota.easyjoke_android.R;
+import com.divpix.easyjoke.R;
 
 import java.util.Timer;
 import java.util.TimerTask;

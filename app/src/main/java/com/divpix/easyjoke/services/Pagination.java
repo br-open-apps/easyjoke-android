@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.services;
+package com.divpix.easyjoke.services;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;

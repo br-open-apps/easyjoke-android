@@ -1,11 +1,11 @@
-package com.alexandremota.easyjoke_android.items;
+package com.divpix.easyjoke.items;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.alexandremota.easyjoke_android.R;
-import com.alexandremota.easyjoke_android.models.Joke;
+import com.divpix.easyjoke.R;
+import com.divpix.easyjoke.models.Joke;
 import com.mikepenz.fastadapter.items.AbstractItem;
 
 import java.util.List;

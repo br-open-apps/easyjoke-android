@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.activities;
+package com.divpix.easyjoke.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,12 +9,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import com.alexandremota.easyjoke_android.R;
-import com.alexandremota.easyjoke_android.fragments.CategoryFragment;
-import com.alexandremota.easyjoke_android.models.Category;
-import com.alexandremota.easyjoke_android.services.Api;
-import com.alexandremota.easyjoke_android.services.ApiService;
-import com.alexandremota.easyjoke_android.services.ListResponse;
+import com.divpix.easyjoke.R;
+import com.divpix.easyjoke.fragments.CategoryFragment;
+import com.divpix.easyjoke.models.Category;
+import com.divpix.easyjoke.services.Api;
+import com.divpix.easyjoke.services.ApiService;
+import com.divpix.easyjoke.services.ListResponse;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;

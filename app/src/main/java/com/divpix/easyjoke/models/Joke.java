@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.models;
+package com.divpix.easyjoke.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

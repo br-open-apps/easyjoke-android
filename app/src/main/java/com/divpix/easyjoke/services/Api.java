@@ -1,7 +1,7 @@
-package com.alexandremota.easyjoke_android.services;
+package com.divpix.easyjoke.services;
 
-import com.alexandremota.easyjoke_android.models.Category;
-import com.alexandremota.easyjoke_android.models.Joke;
+import com.divpix.easyjoke.models.Category;
+import com.divpix.easyjoke.models.Joke;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

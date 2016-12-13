@@ -1,4 +1,4 @@
-package com.alexandremota.easyjoke_android.activities;
+package com.divpix.easyjoke.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,9 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.alexandremota.easyjoke_android.R;
-import com.alexandremota.easyjoke_android.models.Category;
-import com.alexandremota.easyjoke_android.models.Joke;
+import com.divpix.easyjoke.R;
+import com.divpix.easyjoke.models.Category;
+import com.divpix.easyjoke.models.Joke;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
