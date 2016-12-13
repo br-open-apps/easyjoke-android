@@ -1,10 +1,8 @@
 <resources>
-    <string name="app_name">Easy Joke</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="app_name">Piadolândia</string>
     <string name="category_section">Categorias</string>
-
     <string name="share">Compartilhar</string>
     <string name="speech">Ler piada</string>
+    <string name="tap_target_speech_title">Leia suas piadas</string>
+    <string name="tap_target_speech_description">Clique no ícone para que uma voz leia as piadas.</string>
 </resources>

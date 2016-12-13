@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ListResponse<Category>> call, Throwable t) {
-                Log.e(LOG_TAG, "Error while selecting categories",  t);
+                Log.e(LOG_TAG, "Error while selecting categories", t);
             }
         });
 

@@ -1,5 +1,6 @@
 package com.divpix.easyjoke.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,14 +8,19 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.divpix.easyjoke.R;
 import com.divpix.easyjoke.models.Category;
 import com.divpix.easyjoke.models.Joke;
+import com.divpix.easyjoke.utils.PreferencesUtil;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 
@@ -37,6 +43,7 @@ public class JokeActivity extends AppCompatActivity implements TextToSpeech.OnIn
     Joke mJoke;
     Category mCategory;
     TextToSpeech mTts;
+    PreferencesUtil prefUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +77,47 @@ public class JokeActivity extends AppCompatActivity implements TextToSpeech.OnIn
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
+        this.prefUtil = new PreferencesUtil(this);
+
+        if (!prefUtil.getSpeech()) {
+            showTapTargetSequence();
+        }
+    }
+
+    private void showTapTargetSequence() {
+        mToolbar.inflateMenu(R.menu.menu_joke);
+        Menu menu = mToolbar.getMenu();
+        MenuItem menuItemShare = menu.findItem(R.id.action_share);
+        menuItemShare.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_share)
+                .actionBar().color(Color.WHITE));
+
+        MenuItem menuItemTextSpeech = menu.findItem(R.id.action_speech);
+        menuItemTextSpeech.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_speaker_notes)
+                .actionBar().color(Color.WHITE));
+
+        // We have a sequence of targets, so lets build it!
+        final TapTargetSequence sequence = new TapTargetSequence(this)
+                .targets(
+                        TapTarget.forToolbarMenuItem(mToolbar,
+                                R.id.action_speech,
+                                getString(R.string.tap_target_speech_title),
+                                getString(R.string.tap_target_speech_description))
+                                .id(1)
+                                .icon(menuItemTextSpeech.getIcon())
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                        new PreferencesUtil(JokeActivity.this).setSpeech(true);
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        new PreferencesUtil(JokeActivity.this).setSpeech(true);
+                    }
+                });
+        sequence.start();
     }
 
     @Override
@@ -88,7 +136,12 @@ public class JokeActivity extends AppCompatActivity implements TextToSpeech.OnIn
         menuItemTextSpeech.setIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_speaker_notes)
                 .actionBar().color(Color.WHITE));
 
-        return super.onPrepareOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        return super.onCreateView(name, context, attrs);
     }
 
     @Override
@@ -119,7 +172,7 @@ public class JokeActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     @Override
     public void onBackPressed() {
-        if(mTts != null) {
+        if (mTts != null) {
             mTts.stop();
             mTts.shutdown();
             Log.d(LOG_TAG, "TTS Destroyed");
