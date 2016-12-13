@@ -16,6 +16,16 @@ android {
         versionCode 1
         versionName "0.1"
     }
+
+    signingConfigs {
+        release {
+            storeFile file('../../../../Dropbox/apps/easyjoke.jks')
+            storePassword 'easy@joke'
+            keyAlias 'easyjoke_android'
+            keyPassword 'joke@easy'
+        }
+    }
+
     lintOptions {
         abortOnError false;
     }
